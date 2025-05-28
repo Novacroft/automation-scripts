@@ -1,0 +1,1 @@
+az aks stop --resource-group "$aksResourceGroup" --name "$aksClusterName"
