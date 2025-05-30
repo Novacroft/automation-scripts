@@ -1,1 +1,18 @@
+# Verison 1
+
+Param
+(
+  [Parameter (Mandatory= $true)]
+  [String] $aksResourceGroup,
+
+  [Parameter (Mandatory= $true)]
+  [String] $aksClusterName,
+
+  [Parameter (Mandatory= $true)]
+  [String] $subscriptionId
+)
+
+az login --identity
+az account set --subscription $subscriptionId
+
 az aks stop --resource-group "$aksResourceGroup" --name "$aksClusterName"

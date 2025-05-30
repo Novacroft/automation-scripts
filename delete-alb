@@ -1,3 +1,20 @@
+# Verison 1
+
+Param
+(
+  [Parameter (Mandatory= $true)]
+  [String] $aksResourceGroup,
+
+  [Parameter (Mandatory= $true)]
+  [String] $aksClusterName,
+
+  [Parameter (Mandatory= $true)]
+  [String] $subscriptionId
+)
+
+az login --identity
+az account set --subscription $subscriptionId
+
 MC_NODE_RESOURCE_GROUP=$(az aks show --name "$aksClusterName" --resource-group "$aksResourceGroup" --query "nodeResourceGroup" -otsv)
 ALB_NAME=$(az network alb list --resource-group "$MC_NODE_RESOURCE_GROUP" --query "[0].name" -o tsv)
 az network alb delete --resource-group "$MC_NODE_RESOURCE_GROUP" --name "$ALB_NAME" --subscription "$subscriptionId" --yes
