@@ -13,26 +13,26 @@ Param
 )
 
 az login --identity
-Write-Host "Logged in to Azure."
+Write-Output "Logged in to Azure."
 
 az account set --subscription $subscriptionId
-Write-Host "Set subscription to $subscriptionId."
+Write-Output "Set subscription to $subscriptionId."
 
 az extension add --name alb --allow-preview true --yes
-Write-Host "ALB extension added."
+Write-Output "ALB extension added."
 
 $nodePoolRg = az aks show --name $aksClusterName --resource-group $aksResourceGroup --query 'nodeResourceGroup' -otsv
-Write-Host "Node resource group for AKS cluster '$aksClusterName' is '$nodePoolRg'."
+Write-Output "Node resource group for AKS cluster '$aksClusterName' is '$nodePoolRg'."
 
 $albName = az network alb list --resource-group $nodePoolRg --query '[0].name' -o tsv
 
 if (-not $albName) {
-  Write-Host "No ALB found in the node resource group '$nodePoolRg'."
+  Write-Output "No ALB found in the node resource group '$nodePoolRg'."
   exit 0
 } else {
-  Write-Host "ALB '$albName' found in node resource group '$nodePoolRg'."
+  Write-Output "ALB '$albName' found in node resource group '$nodePoolRg'."
   exit 0
 }
 
 az network alb delete --resource-group $nodePoolRg --name $albName --subscription $subscriptionId --yes
-Write-Host "ALB '$albName' deleted from resource group '$nodePoolRg'."
+Write-Output "ALB '$albName' deleted from resource group '$nodePoolRg'."
