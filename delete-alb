@@ -1,4 +1,4 @@
-# Verison 1
+# Verison 2
 
 Param
 (
@@ -13,8 +13,26 @@ Param
 )
 
 az login --identity
-az account set --subscription $subscriptionId
+Write-Host "Logged in to Azure."
 
-MC_NODE_RESOURCE_GROUP=$(az aks show --name "$aksClusterName" --resource-group "$aksResourceGroup" --query "nodeResourceGroup" -otsv)
-ALB_NAME=$(az network alb list --resource-group "$MC_NODE_RESOURCE_GROUP" --query "[0].name" -o tsv)
-az network alb delete --resource-group "$MC_NODE_RESOURCE_GROUP" --name "$ALB_NAME" --subscription "$subscriptionId" --yes
+az account set --subscription $subscriptionId
+Write-Host "Set subscription to $subscriptionId."
+
+az extension add --name alb --allow-preview true --yes
+Write-Host "ALB extension added."
+
+$nodePoolRg = az aks show --name $aksClusterName --resource-group $aksResourceGroup --query 'nodeResourceGroup' -otsv
+Write-Host "Node resource group for AKS cluster '$aksClusterName' is '$nodePoolRg'."
+
+$albName = az network alb list --resource-group $nodePoolRg --query '[0].name' -o tsv
+
+if (-not $albName) {
+  Write-Host "No ALB found in the node resource group '$nodePoolRg'."
+  exit 0
+} else {
+  Write-Host "ALB '$albName' found in node resource group '$nodePoolRg'."
+  exit 0
+}
+
+az network alb delete --resource-group $nodePoolRg --name $albName --subscription $subscriptionId --yes
+Write-Host "ALB '$albName' deleted from resource group '$nodePoolRg'."
